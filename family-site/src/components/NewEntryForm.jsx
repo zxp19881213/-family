@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react'
 import { uploadFile, createEntry } from '../api'
+import { compressImageIfNeeded } from '../utils/compressImage'
 
 export default function NewEntryForm({ onPublished }) {
   const [open, setOpen] = useState(false)
@@ -22,7 +23,8 @@ export default function NewEntryForm({ onPublished }) {
     try {
       const mediaKeys = []
       for (const file of files) {
-        const { key, kind } = await uploadFile(file)
+        const toUpload = await compressImageIfNeeded(file)
+        const { key, kind } = await uploadFile(toUpload)
         mediaKeys.push({ key, kind })
       }
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Comments from './Comments'
+import Lightbox from './Lightbox'
 import { deleteEntry } from '../api'
 
 const typeLabel = {
@@ -15,6 +16,10 @@ function formatDate(dateStr) {
 
 export default function Entry({ entry, onCommented, onDeleted, isAdmin }) {
   const [busy, setBusy] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(null)
+
+  const media = entry.media || []
+  const imageUrls = media.filter((m) => m.kind !== 'video').map((m) => m.url)
 
   async function handleDelete() {
     if (!confirm(`确定要删除「${entry.title}」这条日记吗？删了就找不回来了。`)) {
@@ -49,16 +54,31 @@ export default function Entry({ entry, onCommented, onDeleted, isAdmin }) {
       <h2 className="entry-title">{entry.title}</h2>
       {entry.body && <p className="entry-body">{entry.body}</p>}
 
-      {entry.media && entry.media.length > 0 && (
+      {media.length > 0 && (
         <div className="entry-media-grid">
-          {entry.media.map((m, i) =>
+          {media.map((m, i) =>
             m.kind === 'video' ? (
               <video key={i} className="media-real" src={m.url} controls />
             ) : (
-              <img key={i} className="media-real" src={m.url} alt="" />
+              <img
+                key={i}
+                className="media-real media-clickable"
+                src={m.url}
+                alt=""
+                onClick={() => setLightboxIndex(imageUrls.indexOf(m.url))}
+              />
             )
           )}
         </div>
+      )}
+
+      {lightboxIndex !== null && (
+        <Lightbox
+          images={imageUrls}
+          index={lightboxIndex}
+          onClose={() => setLightboxIndex(null)}
+          onNavigate={setLightboxIndex}
+        />
       )}
 
       <Comments
