@@ -137,6 +137,21 @@ video {
   color: var(--ink-soft);
 }
 
+.admin-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--ink-soft);
+  text-decoration: underline;
+  font-size: 13px;
+  font-family: var(--sans);
+  cursor: pointer;
+}
+
+.admin-toggle:hover {
+  color: var(--accent-dark);
+}
+
 /* ---------- 新建条目 ---------- */
 
 .new-entry-toggle {

@@ -13,7 +13,7 @@ function formatDate(dateStr) {
   return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
 }
 
-export default function Entry({ entry, onCommented, onDeleted }) {
+export default function Entry({ entry, onCommented, onDeleted, isAdmin }) {
   const [busy, setBusy] = useState(false)
 
   async function handleDelete() {
@@ -35,14 +35,16 @@ export default function Entry({ entry, onCommented, onDeleted }) {
       <div className="entry-meta">
         <time className="entry-date">{formatDate(entry.date)}</time>
         <span className="entry-type">{typeLabel[entry.type] || '文字'}</span>
-        <button
-          className="entry-delete"
-          onClick={handleDelete}
-          disabled={busy}
-          title="删除这条日记"
-        >
-          {busy ? '删除中…' : '删除'}
-        </button>
+        {isAdmin && (
+          <button
+            className="entry-delete"
+            onClick={handleDelete}
+            disabled={busy}
+            title="删除这条日记"
+          >
+            {busy ? '删除中…' : '删除'}
+          </button>
+        )}
       </div>
       <h2 className="entry-title">{entry.title}</h2>
       {entry.body && <p className="entry-body">{entry.body}</p>}

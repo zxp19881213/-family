@@ -5,6 +5,12 @@ export function checkPassword(request, env) {
   return provided === env.FAMILY_PASSWORD
 }
 
+// 管理员密码额外校验，只有删除这类操作需要。
+export function checkAdminPassword(request, env) {
+  const provided = request.headers.get('x-admin-password') || ''
+  return provided === env.ADMIN_PASSWORD
+}
+
 export function unauthorized() {
   return new Response(JSON.stringify({ error: '密码不对' }), {
     status: 401,

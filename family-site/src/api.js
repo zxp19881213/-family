@@ -1,4 +1,5 @@
 const PASSWORD_KEY = 'family-journal-password'
+const ADMIN_KEY = 'family-journal-admin-password'
 
 export function getStoredPassword() {
   return sessionStorage.getItem(PASSWORD_KEY) || ''
@@ -8,8 +9,27 @@ export function storePassword(pw) {
   sessionStorage.setItem(PASSWORD_KEY, pw)
 }
 
+export function getStoredAdminPassword() {
+  return sessionStorage.getItem(ADMIN_KEY) || ''
+}
+
+export function storeAdminPassword(pw) {
+  sessionStorage.setItem(ADMIN_KEY, pw)
+}
+
+export function clearAdminPassword() {
+  sessionStorage.removeItem(ADMIN_KEY)
+}
+
+export function isAdmin() {
+  return !!getStoredAdminPassword()
+}
+
 function authHeaders(extra = {}) {
-  return { 'x-family-password': getStoredPassword(), ...extra }
+  const headers = { 'x-family-password': getStoredPassword(), ...extra }
+  const adminPw = getStoredAdminPassword()
+  if (adminPw) headers['x-admin-password'] = adminPw
+  return headers
 }
 
 export async function fetchEntries() {
@@ -64,6 +84,18 @@ export async function addComment({ entryId, author, text }) {
 export async function verifyPassword(pw) {
   const res = await fetch('/api/entries', {
     headers: { 'x-family-password': pw },
+  })
+  return res.ok
+}
+
+// 验证管理员密码
+export async function verifyAdminPassword(pw) {
+  const res = await fetch('/api/admin-verify', {
+    method: 'POST',
+    headers: {
+      'x-family-password': getStoredPassword(),
+      'x-admin-password': pw,
+    },
   })
   return res.ok
 }
