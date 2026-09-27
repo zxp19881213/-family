@@ -107,9 +107,9 @@ video {
 /* ---------- 页面整体 ---------- */
 
 .page {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px 80px;
+  padding: 40px 24px 80px;
 }
 
 .header {
@@ -291,22 +291,28 @@ video {
 /* Pexels 风格的瀑布流图片墙：用多栏布局代替等高网格，
    图片保留原始比例，不强行裁成统一尺寸 */
 .entry-media-grid {
-  columns: 2 220px;
-  column-gap: 8px;
+  columns: 2 260px;
+  column-gap: 14px;
   margin-bottom: 20px;
   width: 100%;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 700px) {
   .entry-media-grid {
-    columns: 3 220px;
+    columns: 3 300px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .entry-media-grid {
+    columns: 4 300px;
   }
 }
 
 .media-real {
   width: 100%;
-  border-radius: 10px;
-  margin-bottom: 8px;
+  border-radius: 12px;
+  margin-bottom: 14px;
   break-inside: avoid;
   background: var(--bg-soft);
   transition: transform 0.15s, box-shadow 0.15s;
@@ -412,6 +418,10 @@ video {
     font-size: 24px;
   }
   .entry-media-grid {
-    columns: 2 130px;
+    columns: 2 150px;
+    column-gap: 8px;
+  }
+  .media-real {
+    margin-bottom: 8px;
   }
 }
