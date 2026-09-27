@@ -40,7 +40,7 @@ export default function NewEntryForm({ onPublished }) {
       setOpen(false)
       onPublished()
     } catch (err) {
-      setError('发布失败，再试一次')
+      setError(`发布失败：${err.message || '未知错误'}`)
     } finally {
       setBusy(false)
     }

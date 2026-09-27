@@ -10,26 +10,33 @@ export async function compressImageIfNeeded(file) {
   // gif 有动画，压缩会破坏动图效果，跳过
   if (file.type === 'image/gif') return file
 
-  const bitmap = await createImageBitmap(file)
-  const { width, height } = bitmap
+  try {
+    const bitmap = await createImageBitmap(file)
+    const { width, height } = bitmap
 
-  const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height))
-  const targetWidth = Math.round(width * scale)
-  const targetHeight = Math.round(height * scale)
+    const scale = Math.min(1, MAX_DIMENSION / Math.max(width, height))
+    const targetWidth = Math.round(width * scale)
+    const targetHeight = Math.round(height * scale)
 
-  const canvas = document.createElement('canvas')
-  canvas.width = targetWidth
-  canvas.height = targetHeight
-  const ctx = canvas.getContext('2d')
-  ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight)
+    const canvas = document.createElement('canvas')
+    canvas.width = targetWidth
+    canvas.height = targetHeight
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(bitmap, 0, 0, targetWidth, targetHeight)
 
-  const blob = await new Promise((resolve) =>
-    canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY)
-  )
+    const blob = await new Promise((resolve) =>
+      canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY)
+    )
 
-  // 极少数情况下压缩失败或压完反而更大，就用原图
-  if (!blob || blob.size >= file.size) return file
+    // 极少数情况下压缩失败或压完反而更大，就用原图
+    if (!blob || blob.size >= file.size) return file
 
-  const newName = file.name.replace(/\.[^.]+$/, '') + '.jpg'
-  return new File([blob], newName, { type: 'image/jpeg' })
+    const newName = file.name.replace(/\.[^.]+$/, '') + '.jpg'
+    return new File([blob], newName, { type: 'image/jpeg' })
+  } catch (err) {
+    // 浏览器不认识这个格式（比如某些 HEIC 情况）就直接传原图，
+    // 不能因为压缩失败就让整个发布卡住
+    console.warn('图片压缩失败，改用原图上传', err)
+    return file
+  }
 }
