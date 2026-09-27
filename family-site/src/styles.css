@@ -273,6 +273,23 @@ video {
   color: var(--accent-dark);
 }
 
+.entry-delete {
+  margin-left: auto;
+  padding: 4px 12px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-family: var(--sans);
+  cursor: pointer;
+}
+
+.entry-delete:hover {
+  border-color: #d64545;
+  color: #d64545;
+}
+
 .entry-title {
   font-size: 21px;
   font-weight: 700;

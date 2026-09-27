@@ -32,7 +32,12 @@ function App() {
 
           <div className="entry-list">
             {entries.map((entry) => (
-              <Entry key={entry.id} entry={entry} onCommented={load} />
+              <Entry
+                key={entry.id}
+                entry={entry}
+                onCommented={load}
+                onDeleted={load}
+              />
             ))}
           </div>
         </main>

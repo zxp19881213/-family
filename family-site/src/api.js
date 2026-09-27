@@ -28,6 +28,15 @@ export async function createEntry({ title, body, date, type, mediaKeys }) {
   return res.json()
 }
 
+export async function deleteEntry(id) {
+  const res = await fetch(`/api/entries/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  })
+  if (!res.ok) throw new Error('删除失败')
+  return res.json()
+}
+
 export async function uploadFile(file) {
   const form = new FormData()
   form.append('file', file)
