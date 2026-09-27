@@ -1,15 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import PasswordGate from './components/PasswordGate'
 import Entry from './components/Entry'
 import NewEntryForm from './components/NewEntryForm'
-import { entries as initialEntries } from './data/entries'
+import { fetchEntries } from './api'
 
 function App() {
-  const [entries, setEntries] = useState(initialEntries)
+  const [entries, setEntries] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  function handleAdd(entry) {
-    setEntries([entry, ...entries])
+  function load() {
+    setLoading(true)
+    fetchEntries()
+      .then(setEntries)
+      .finally(() => setLoading(false))
   }
+
+  useEffect(load, [])
 
   return (
     <PasswordGate>
@@ -20,16 +26,19 @@ function App() {
         </header>
 
         <main className="main">
-          <NewEntryForm onAdd={handleAdd} />
+          <NewEntryForm onPublished={load} />
+
+          {loading && <p className="loading-hint">加载中…</p>}
+
           <div className="entry-list">
             {entries.map((entry) => (
-              <Entry key={entry.id} entry={entry} />
+              <Entry key={entry.id} entry={entry} onCommented={load} />
             ))}
           </div>
         </main>
 
         <footer className="footer">
-          <p>只有家人知道这里 · 第一阶段 · 内容是假数据</p>
+          <p>只有家人知道这里</p>
         </footer>
       </div>
     </PasswordGate>

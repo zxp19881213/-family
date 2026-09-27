@@ -302,6 +302,36 @@ body {
   font-size: 12px;
 }
 
+.media-real {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #e8e4d4;
+}
+
+.new-entry-file {
+  display: block;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.loading-hint {
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.comment-author-input {
+  width: 90px;
+  flex: none;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  font-family: var(--sans);
+  font-size: 13px;
+  background: var(--paper);
+}
+
 /* ---------- 评论 ---------- */
 
 .comments {

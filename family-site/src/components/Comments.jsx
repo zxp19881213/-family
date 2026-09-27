@@ -1,17 +1,32 @@
 import { useState } from 'react'
+import { addComment } from '../api'
 
-// 第一阶段：评论存在本地 state 里，刷新会丢失。
-// 第三阶段接入 Giscus 后，这个组件会被替换成 Giscus 的嵌入 iframe。
-export default function Comments({ initialComments }) {
+const AUTHOR_KEY = 'family-journal-author'
+
+export default function Comments({ entryId, initialComments, onCommented }) {
   const [comments, setComments] = useState(initialComments)
   const [draft, setDraft] = useState('')
+  const [author, setAuthor] = useState(
+    () => localStorage.getItem(AUTHOR_KEY) || ''
+  )
+  const [busy, setBusy] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const text = draft.trim()
+    const name = author.trim() || '匿名'
     if (!text) return
-    setComments([...comments, { author: '我', text }])
-    setDraft('')
+
+    setBusy(true)
+    localStorage.setItem(AUTHOR_KEY, name)
+    try {
+      await addComment({ entryId, author: name, text })
+      setComments([...comments, { author: name, text }])
+      setDraft('')
+      onCommented && onCommented()
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -28,12 +43,18 @@ export default function Comments({ initialComments }) {
       )}
       <form className="comment-form" onSubmit={handleSubmit}>
         <input
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          placeholder="你的名字"
+          className="comment-author-input"
+        />
+        <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder="说点什么…"
           className="comment-input"
         />
-        <button type="submit" className="comment-submit">
+        <button type="submit" className="comment-submit" disabled={busy}>
           发送
         </button>
       </form>

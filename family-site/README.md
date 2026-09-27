@@ -1,13 +1,30 @@
-# 我们家的日记本 — 第一阶段
+# 我们家的日记本 — 第二阶段
 
-一个只给自己/家人看的照片 + 视频 + 博客小站，第一阶段用假数据跑通页面结构。
+一个只给自己/家人看的照片 + 视频 + 博客小站。
 
 ## 已经做了什么
 
 - 首页：按时间倒序的"日记流"，每条可以是照片、视频或纯文字
-- 每条日记下面有一个评论区（目前存在浏览器里，刷新会丢失）
-- 顶部有一个"写一条新日记"的表单（目前只是加到当前页面，不会保存）
-- 一个简单的密码门保护整个网站
+- 每条日记下面有真实的评论区，存在 Cloudflare D1 数据库里，永久保存
+- "写一条新日记"支持真正上传照片/视频到 Cloudflare R2
+- 密码门校验挪到了后端（Cloudflare Functions），不只是前端摆设
+
+## 需要在 Cloudflare Pages 项目里配置的绑定/环境变量
+
+Settings → Functions（或 Bindings）里需要有：
+
+| 类型 | 名字 | 值 |
+|---|---|---|
+| R2 bucket binding | `MEDIA_BUCKET` | 你建的 R2 存储桶（如 family-media） |
+| D1 database binding | `DB` | 你建的 D1 数据库（如 family-db） |
+| 环境变量 | `FAMILY_PASSWORD` | 全家共用的密码（建议加密） |
+| 环境变量 | `MEDIA_BASE_URL` | R2 存储桶的 Public Development URL，比如 `https://pub-xxxx.r2.dev`（不要加末尾的斜杠） |
+
+改动这些设置后需要重新部署一次才生效。
+
+## D1 数据库表结构
+
+第一次使用前，在 D1 数据库的 Console 里执行 `schema/schema.sql` 里的建表语句。
 
 ## 本地运行
 

@@ -1,21 +1,33 @@
-import { useState } from 'react'
-
-// 第一阶段：最简单的共享密码保护，密码写在这里（第二阶段可换成
-// Cloudflare Pages 的环境变量 + Function 校验，避免前端明文密码）。
-const SITE_PASSWORD = 'ourfamily'
-const STORAGE_KEY = 'family-journal-unlocked'
+import { useState, useEffect } from 'react'
+import { getStoredPassword, storePassword, verifyPassword } from '../api'
 
 export default function PasswordGate({ children }) {
-  const [unlocked, setUnlocked] = useState(
-    () => sessionStorage.getItem(STORAGE_KEY) === 'true'
-  )
+  const [unlocked, setUnlocked] = useState(false)
+  const [checked, setChecked] = useState(false)
   const [input, setInput] = useState('')
   const [error, setError] = useState(false)
+  const [busy, setBusy] = useState(false)
 
-  function handleSubmit(e) {
+  // 页面首次加载时，如果本次会话之前已经验证过密码，直接放行
+  useEffect(() => {
+    const stored = getStoredPassword()
+    if (!stored) {
+      setChecked(true)
+      return
+    }
+    verifyPassword(stored).then((ok) => {
+      setUnlocked(ok)
+      setChecked(true)
+    })
+  }, [])
+
+  async function handleSubmit(e) {
     e.preventDefault()
-    if (input === SITE_PASSWORD) {
-      sessionStorage.setItem(STORAGE_KEY, 'true')
+    setBusy(true)
+    const ok = await verifyPassword(input)
+    setBusy(false)
+    if (ok) {
+      storePassword(input)
       setUnlocked(true)
       setError(false)
     } else {
@@ -23,6 +35,7 @@ export default function PasswordGate({ children }) {
     }
   }
 
+  if (!checked) return null
   if (unlocked) return children
 
   return (
@@ -42,8 +55,8 @@ export default function PasswordGate({ children }) {
           className="gate-input"
         />
         {error && <p className="gate-error">密码不对，再试一次</p>}
-        <button type="submit" className="gate-button">
-          进门
+        <button type="submit" className="gate-button" disabled={busy}>
+          {busy ? '核对中…' : '进门'}
         </button>
       </form>
     </div>
